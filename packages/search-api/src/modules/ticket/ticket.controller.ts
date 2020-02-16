@@ -14,9 +14,9 @@ export class TicketController {
   }
 
   @Get('search')
-  search(@Query('key') key: string, @Query('value') value: string, @Query('exact') exact?: string) {
+  search(@Query('field') field: string, @Query('value') value: string, @Query('exact') exact?: string) {
     try {
-      const findConditions: FindConditions<Ticket> = this.searchService.createFindConditions(key, value, exact);
+      const findConditions: FindConditions<Ticket> = this.searchService.createFindConditions(field, value, exact);
       return this.ticketService.search(findConditions);
     } catch (error) {
       throw error;

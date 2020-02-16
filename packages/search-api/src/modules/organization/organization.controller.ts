@@ -14,9 +14,9 @@ export class OrganizationController {
   }
 
   @Get('search')
-  search(@Query('key') key: string, @Query('value') value: string, @Query('exact') exact?: string) {
+  search(@Query('field') field: string, @Query('value') value: string, @Query('exact') exact?: string) {
       try {
-        const findConditions: FindConditions<Organization> = this.searchService.createFindConditions(key, value, exact);
+        const findConditions: FindConditions<Organization> = this.searchService.createFindConditions(field, value, exact);
         return this.orgService.search(findConditions);
       } catch (error) {
         throw error;

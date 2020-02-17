@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { SearchForm } from './form/SearchForm';
+import { SearchEvent } from './interfaces/search.interface';
 
-export class Search extends React.Component {
+export class Search extends Component {
+
+  onSearchEvent = (event: SearchEvent) => {
+
+  }
+
   render() {
     return (
-      <h2>Search</h2>
+      <SearchForm onSearchEvent={this.onSearchEvent} />
     );
   }
 };

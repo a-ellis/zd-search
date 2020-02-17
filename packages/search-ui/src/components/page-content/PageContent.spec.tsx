@@ -1,10 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { PageContent } from './PageContent';
+import { render } from '../../utils/test-utils';
 
 describe('PageContent', () => {
   it('should render', () => {
-    const pageContent = render(<PageContent />);
-    expect(pageContent).toBeTruthy();
+    const { baseElement } = render(<PageContent />);
+    expect(baseElement).toBeVisible();
   });
 });

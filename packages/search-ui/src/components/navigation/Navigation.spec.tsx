@@ -1,10 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { Navigation } from './Navigation';
+import { render } from '../../utils/test-utils';
 
 describe('Navigation', () => {
   it('should render', () => {
-    const navigation = render(<Navigation />);
-    expect(navigation).toBeTruthy();
+    const { baseElement } = render(<Navigation />);
+    expect(baseElement).toBeVisible();
   });
 });

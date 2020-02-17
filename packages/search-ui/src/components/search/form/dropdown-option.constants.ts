@@ -7,6 +7,11 @@ export enum FIELD_DATA_TYPE {
   ARRAY = 'array'
 };
 
+export const exactMatchDataTypes = [
+  'boolean',
+  'number'
+];
+
 export const entityOptions: DropdownOption[] = [
   { label: 'Users', value: 'users' },
   { label: 'Organizations', value: 'organizations' },
@@ -67,3 +72,9 @@ const userFieldOptions: DropdownOption[] = [
   { label: 'Suspended', value: 'suspended', type: FIELD_DATA_TYPE.BOOLEAN },
   { label: 'Role', value: 'role', type: FIELD_DATA_TYPE.STRING }
 ];
+
+export const allFieldOptions = {
+  organizations: organizationFieldOptions,
+  tickets: ticketFieldOptions,
+  users: userFieldOptions,
+};

@@ -4,20 +4,20 @@ import { DropdownOption } from '../interfaces/search.interface';
 import { Button } from '@zendeskgarden/react-buttons';
 
 interface Props {
-  onValueChange: () => void;
-  onInputKeyDown: () => void;
+  onValueChange: (event: React.FormEvent<HTMLInputElement>) => void;
+  onInputKeyDown: (event: KeyboardEvent) => void;
   onSearchButtonClick: () => void;
-  entity?: DropdownOption;
-  field?: DropdownOption;
-  matcher?: DropdownOption;
+  selectedEntity?: DropdownOption;
+  selectedField?: DropdownOption;
+  selectedMatcher?: DropdownOption;
   value?: string;
 }
 
 export class SearchValueInput extends Component<Props> {
   render() {
-      const { entity, field, matcher, value, onValueChange, onInputKeyDown, onSearchButtonClick } = this.props;
+      const { selectedEntity, selectedField, selectedMatcher, value, onValueChange, onInputKeyDown, onSearchButtonClick } = this.props;
 
-      if (field?.type === 'boolean') {
+      if (selectedField?.type === 'boolean') {
         return (
           <Field>
             <Label>Value</Label>
@@ -44,12 +44,12 @@ export class SearchValueInput extends Component<Props> {
           </Field>
         )
       } else {
-        return matcher?.value === 'is_empty' ? (
+        return selectedMatcher?.value === 'is_empty' ? (
           <Button
             stretched
             className="u-mv"
             onClick={onSearchButtonClick}
-            disabled={!entity || !field}
+            disabled={!selectedEntity || !selectedField}
           >
             Search
           </Button>
@@ -61,7 +61,7 @@ export class SearchValueInput extends Component<Props> {
               onChange={onValueChange}
               onKeyDown={onInputKeyDown}
               value={value}
-              disabled={!entity || !field || !matcher}
+              disabled={!selectedEntity || !selectedField || !selectedMatcher}
             />
           </Field>
         );

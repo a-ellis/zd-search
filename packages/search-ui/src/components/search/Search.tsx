@@ -1,16 +1,40 @@
 import React, { Component } from 'react';
 import { SearchForm } from './form/SearchForm';
-import { SearchEvent } from './interfaces/search.interface';
+import { SearchEvent, EntityType } from './interfaces/search.interface';
+import axios from 'axios';
+import { debounce } from 'lodash';
 
-export class Search extends Component {
+interface State {
+  searchResults?: any[];
+  searchResultsType?: EntityType;
+}
 
-  onSearchEvent = (event: SearchEvent) => {
+export class Search extends Component<{}, State> {
+  state: Readonly<State> = {
+    searchResults: undefined,
+    searchResultsType: undefined
+  };
 
+  getSearchResults = async ({ entity, field, matcher, value }: SearchEvent) => {
+    try {
+      const { data } = await axios.get(`/${entity}/search`, {
+        params: {
+          field,
+          value,
+          exact: !!(matcher === 'is')
+        }
+      });
+      this.setState({ searchResults: data, searchResultsType: entity });
+    } catch (err) {
+      console.error(err);
+    }
   }
+
+  debouncedSearchEvent = debounce(this.getSearchResults, 300);
 
   render() {
     return (
-      <SearchForm onSearchEvent={this.onSearchEvent} />
+      <SearchForm onSearchEvent={this.debouncedSearchEvent} />
     );
   }
 };

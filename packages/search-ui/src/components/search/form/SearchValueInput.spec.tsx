@@ -39,31 +39,31 @@ describe('SearchValueInput', () => {
     });
 
     it('renders when field.type is not "boolean"', () => {
-      const { getByPlaceholderText } = render(<SearchValueInput {...getDefaultProps()} field={mockField} />);
+      const { getByPlaceholderText } = render(<SearchValueInput {...getDefaultProps()} selectedField={mockField} />);
 
       expect(getByPlaceholderText(inputPlaceholderText)).toBeVisible();
     });
 
     it('renders when matcher value is not "is_empty"', () => {
-      const { getByPlaceholderText } = render(<SearchValueInput {...getDefaultProps()} matcher={mockMatcher} />);
+      const { getByPlaceholderText } = render(<SearchValueInput {...getDefaultProps()} selectedMatcher={mockMatcher} />);
 
       expect(getByPlaceholderText(inputPlaceholderText)).toBeVisible();
     });
 
     it('is disabled when there is no entity', () => {
-      const { getByPlaceholderText } = render(<SearchValueInput {...getDefaultProps()} entity={undefined} />);
+      const { getByPlaceholderText } = render(<SearchValueInput {...getDefaultProps()} selectedEntity={undefined} />);
 
       expect(getByPlaceholderText(inputPlaceholderText)).toBeDisabled();
     });
 
     it('is disabled when there is an entity, but no field', () => {
-      const { getByPlaceholderText } = render(<SearchValueInput {...getDefaultProps()} entity={mockEntity} field={undefined} />);
+      const { getByPlaceholderText } = render(<SearchValueInput {...getDefaultProps()} selectedEntity={mockEntity} selectedField={undefined} />);
 
       expect(getByPlaceholderText(inputPlaceholderText)).toBeDisabled();
     });
 
     it('is disabled when there is an entity and field, but no matcher', () => {
-      const { getByPlaceholderText } = render(<SearchValueInput {...getDefaultProps()} entity={mockEntity} field={mockField} matcher={undefined} />);
+      const { getByPlaceholderText } = render(<SearchValueInput {...getDefaultProps()} selectedEntity={mockEntity} selectedField={mockField} selectedMatcher={undefined} />);
 
       expect(getByPlaceholderText(inputPlaceholderText)).toBeDisabled();
     });
@@ -79,7 +79,7 @@ describe('SearchValueInput', () => {
         value: 'active',
         type: 'boolean'
       };
-      const { getByLabelText } = render(<SearchValueInput {...getDefaultProps()} field={mockField} />);
+      const { getByLabelText } = render(<SearchValueInput {...getDefaultProps()} selectedField={mockField} />);
       const radioTrue = getByLabelText(trueLabelText);
       const radioFalse = getByLabelText(falseLabelText);
 
@@ -94,7 +94,7 @@ describe('SearchValueInput', () => {
         value: 'name',
         type: 'string'
       };
-      const { queryByLabelText } = render(<SearchValueInput {...getDefaultProps()} field={mockField} />);
+      const { queryByLabelText } = render(<SearchValueInput {...getDefaultProps()} selectedField={mockField} />);
 
       expect(queryByLabelText(trueLabelText)).toBeNull();
       expect(queryByLabelText(falseLabelText)).toBeNull();
@@ -118,19 +118,19 @@ describe('SearchValueInput', () => {
     };
 
     it('renders when field type is not "boolean" and matcher value is "is_empty"', () => {
-      const { getByText } = render(<SearchValueInput {...getDefaultProps()} matcher={mockMatcher} />);
+      const { getByText } = render(<SearchValueInput {...getDefaultProps()} selectedMatcher={mockMatcher} />);
 
       expect(getByText(buttonText)).toBeVisible();
     });
 
     it('is disabled when there is no entity', () => {
-      const { getByText } = render(<SearchValueInput {...getDefaultProps()} matcher={mockMatcher} />);
+      const { getByText } = render(<SearchValueInput {...getDefaultProps()} selectedMatcher={mockMatcher} />);
 
       expect(getByText(buttonText)).toBeDisabled();
     });
 
     it('is disabled when there is an entity, but no field', () => {
-      const { getByText } = render(<SearchValueInput {...getDefaultProps()} matcher={mockMatcher} entity={mockEntity} />);
+      const { getByText } = render(<SearchValueInput {...getDefaultProps()} selectedMatcher={mockMatcher} selectedEntity={mockEntity} />);
 
       expect(getByText(buttonText)).toBeDisabled();
     });

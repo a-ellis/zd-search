@@ -2,19 +2,25 @@ import React from 'react';
 import { render, waitForElement } from '../../../utils/test-utils';
 import { DropdownOption } from '../interfaces/search.interface';
 import { entityOptions } from './dropdown-option.constants';
-import { EntityDropdown } from './EntityDropdown';
+import { SearchDropdown } from './SearchDropdown';
 
-describe('EntityDropdown', () => {
-  const selectPlaceholderText = 'Select Data Type...';
+describe('SearchDropdown', () => {
+  const selectLabelText = 'Entity';
+  const selectPlaceholderText = 'Select Entity...';
+  const getDefaultProps = () => ({
+    label: selectLabelText,
+    placeholder: selectPlaceholderText,
+    dropdownOptions: entityOptions
+  });
 
   it('renders', () => {
-    const { baseElement } = render(<EntityDropdown />);
+    const { baseElement } = render(<SearchDropdown />);
 
     expect(baseElement).toBeVisible();
   });
 
-  it('renders list of entity options in dropdown', async () => {
-    const { getByText } = render(<EntityDropdown />);
+  it('renders list of options in dropdown', async () => {
+    const { getByText } = render(<SearchDropdown {...getDefaultProps()} />);
     const selectEl = getByText(selectPlaceholderText);
 
     selectEl.click();
@@ -28,11 +34,11 @@ describe('EntityDropdown', () => {
     expect(ticketsOption).toBeVisible();
   });
 
-  it('displays selected entity', async () => {
+  it('displays selected option', async () => {
     let mockEntity;
     const mockOnSelecEntity = (entity: DropdownOption) => mockEntity = { ...entity };
 
-    const { getByText, rerender } = render(<EntityDropdown onSelectEntity={mockOnSelecEntity} entity={mockEntity} />);
+    const { getByText, rerender } = render(<SearchDropdown {...getDefaultProps()} onSelect={mockOnSelecEntity} selectedOption={mockEntity} />);
     const selectEl = getByText(selectPlaceholderText);
 
     selectEl.click();
@@ -41,7 +47,7 @@ describe('EntityDropdown', () => {
 
     usersOption.click();
 
-    rerender(<EntityDropdown onSelectEntity={mockOnSelecEntity} entity={mockEntity} />);
+    rerender(<SearchDropdown {...getDefaultProps()} onSelect={mockOnSelecEntity} selectedOption={mockEntity} />);
 
     expect(getByText('Users')).toBeVisible();
 

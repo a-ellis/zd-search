@@ -6,7 +6,11 @@
     "start:ui": "lerna run start --scope search-ui --stream",
     "start:api": "lerna run start --scope search-api --stream",
     "test": "npm run test:cov",
-    "test:cov": "lerna run test:cov"
+    "test:cov": "lerna run test:cov",
+    "test:e2e": "lerna run test:e2e --scope search-api",
+    "start:db": "docker-compose up -d",
+    "stop:db": "down-compose down",
+    "seed:db": "lerna run seed --scope search-api"
   },
   "devDependencies": {
     "lerna": "^3.20.2"

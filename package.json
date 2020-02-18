@@ -9,7 +9,7 @@
     "test:cov": "lerna run test:cov",
     "test:e2e": "lerna run test:e2e --scope search-api",
     "start:db": "docker-compose up -d",
-    "stop:db": "down-compose down",
+    "stop:db": "docker-compose down",
     "seed:db": "lerna run seed --scope search-api"
   },
   "devDependencies": {

@@ -91,6 +91,8 @@ All unit tests can be run from the rootDir via:
 ```bash
 npm test
 ```
+  - Coverage reports will be generated in `./packages/**/coverage` for both `search-ui` and `search-api`.
+
 while the e2e tests for `search-api` can be run via:
 ```bash
 npm run test:e2e

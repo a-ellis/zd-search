@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { DropdownOption, SearchEvent, EntityType } from '../interfaces/search.interface';
+import { DropdownOption, EntityType, SearchEvent } from '../interfaces/search.interface';
 import { allFieldOptions, entityOptions, exactMatchDataTypes, matcherOptions } from './dropdown-option.constants';
 import { SearchDropdown } from './SearchDropdown';
 import { SearchValueInput } from './SearchValueInput';

@@ -1,40 +1,19 @@
 import React from 'react';
-import { cleanup, fireEvent, render, RenderResult, waitForElement } from '../../../utils/test-utils';
+import { fireEvent, render, wait, waitForElement } from '../../../utils/test-utils';
+import { SearchEvent } from '../interfaces/search.interface';
 import { entityOptions } from './dropdown-option.constants';
 import { SearchForm } from './SearchForm';
 
-const getDefaultProps = () => ({
-  onSearchEvent: jest.fn()
+const getDefaultProps = (props?: { onSearchEvent: (e: SearchEvent) => void }) => ({
+  onSearchEvent: jest.fn(),
+  ...props
 });
 
-/**
- * Utility for pre-selecting value from entity dropdown
- */
-const selectEntityFromDropdown = async (placeholderText: string = 'Select Entity...', optionText: string = 'Users'): Promise<RenderResult> => {
-  const originalRender = render(<SearchForm {...getDefaultProps()} />);
-  originalRender.getByText(placeholderText).click();
-  (await (waitForElement(() => originalRender.getByText(optionText)))).click();
-
-  originalRender.rerender(<SearchForm {...getDefaultProps()} />);
-
-  return originalRender;
-};
-
-const selectEntityAndFieldFromDropdown = async (optionText: string = 'ID') => {
-  const originalRender = await selectEntityFromDropdown();
-  originalRender.getByText('Select Field...').click();
-  (await (waitForElement(() => originalRender.getByText(optionText)))).click();
-
-  originalRender.rerender(<SearchForm {...getDefaultProps()} />);
-
-  return originalRender;
-}
-
-describe('Search', () => {
-
-  afterEach(() => {
-    cleanup();
-  });
+describe('SearchForm', () => {
+  const ENTITY_PLACEHOLDER = 'Select Entity...';
+  const FIELD_PLACEHOLDER = 'Select Field...';
+  const MATCHER_PLACEHOLDER = 'Select Matcher...';
+  const VALUE_LABEL = 'Value';
 
   it('renders with default props', () => {
     const { baseElement } = render(<SearchForm {...getDefaultProps()} />);
@@ -43,17 +22,15 @@ describe('Search', () => {
   });
 
   describe('Entity Dropdown', () => {
-    const entityPlaceholderText = 'Select Entity...';
-
     it('renders', () => {
       const { getByText } = render(<SearchForm {...getDefaultProps()} />);
 
-      expect(getByText(entityPlaceholderText)).toBeVisible();
+      expect(getByText(ENTITY_PLACEHOLDER)).toBeVisible();
     });
 
     it('sets entity on selection', async () => {
-      const { getByText, rerender } = render(<SearchForm {...getDefaultProps()} />);
-      const entitySelectEl = getByText(entityPlaceholderText);
+      const { getByText } = render(<SearchForm {...getDefaultProps()} />);
+      const entitySelectEl = getByText(ENTITY_PLACEHOLDER);
 
       entitySelectEl.click();
 
@@ -66,8 +43,6 @@ describe('Search', () => {
   });
 
   describe('Field Dropdown', () => {
-    const fieldPlaceholderText = 'Select Field...';
-
     it('renders', () => {
       const { baseElement } = render(<SearchForm {...getDefaultProps()} />);
 
@@ -78,26 +53,24 @@ describe('Search', () => {
       const { getByText } = render(<SearchForm {...getDefaultProps()} />);
 
       // Dropdown uses custom DOM for creating the Select; key off of the class used to disable it
-      expect(getByText(fieldPlaceholderText).getAttribute('class')).toContain('text__is-disabled');
+      expect(getByText(FIELD_PLACEHOLDER).getAttribute('class')).toContain('text__is-disabled');
     });
 
     it('sets field on selection', async () => {
-      const { getByText, rerender } = await selectEntityFromDropdown();
-      const fieldSelectEl = getByText(fieldPlaceholderText);
+      const { getByText } = render(<SearchForm {...getDefaultProps()} />);
 
+      getByText(ENTITY_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Users'))).click();
+
+      const fieldSelectEl = getByText(FIELD_PLACEHOLDER);
       fieldSelectEl.click();
-
-      const idOption = await waitForElement(() => getByText('ID'));
-
-      idOption.click();
+      (await waitForElement(() => getByText('ID'))).click();
 
       expect(fieldSelectEl.textContent).toBe('ID');
     });
   });
 
   describe('Matcher Dropdown', () => {
-    const matcherPlaceholderText = 'Select Matcher...';
-
     it('renders', () => {
       const { baseElement } = render(<SearchForm {...getDefaultProps()} />);
 
@@ -108,97 +81,73 @@ describe('Search', () => {
       const { getByText } = render(<SearchForm {...getDefaultProps()} />);
 
       // Dropdown uses custom DOM for creating the Select; key off of the class used to disable it
-      expect(getByText(matcherPlaceholderText).getAttribute('class')).toContain('text__is-disabled');
+      expect(getByText(MATCHER_PLACEHOLDER).getAttribute('class')).toContain('text__is-disabled');
     });
 
     it('is disabled when there is a selected entity, but not a selected field', async () => {
-      const { getByText } = await selectEntityFromDropdown();
+      const { getByText } = render(<SearchForm {...getDefaultProps()} />);
+
+      getByText(ENTITY_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Users'))).click();
 
       // Dropdown uses custom DOM for creating the Select; key off of the class used to disable it
-      expect(getByText(matcherPlaceholderText).getAttribute('class')).toContain('text__is-disabled');
+      expect(getByText(MATCHER_PLACEHOLDER).getAttribute('class')).toContain('text__is-disabled');
     });
 
     it('renders all options when field type does not require exact match', async () => {
-      const { getByText, getAllByRole } = await selectEntityAndFieldFromDropdown('Url');
-      const matcherSelectEl = getByText('Select Matcher...');
+      const { getByText } = render(<SearchForm {...getDefaultProps()} />);
 
-      matcherSelectEl.click();
+      getByText(ENTITY_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Users'))).click();
 
-      const optionElements = await waitForElement(() => getAllByRole('option'));
+      getByText(FIELD_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Url'))).click();
 
-      expect(optionElements).toHaveLength(3);
+      getByText(MATCHER_PLACEHOLDER).click();
+
+      await wait(() => {
+        expect(getByText('Is')).toBeVisible();
+        expect(getByText('Is Empty')).toBeVisible();
+        expect(getByText('Contains')).toBeVisible();
+      });
     });
 
     it('filters out "contains" option when field type requires exact match', async () => {
-      const { getByText, queryByText } = await selectEntityAndFieldFromDropdown();
-      const matcherSelectEl = getByText('Select Matcher...');
+      const { getByText, queryByText } = render(<SearchForm {...getDefaultProps()} />);
 
-      matcherSelectEl.click();
+      getByText(ENTITY_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Users'))).click();
 
-      // Once first option is available, all optoins are available
-      const isOption = await waitForElement(() => getByText('Is'));
+      getByText(FIELD_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('ID'))).click();
 
-      const isEmptyOption = getByText('Is Empty');
+      getByText(MATCHER_PLACEHOLDER).click();
 
-      // use queryBy as option is expected to be filtered out
-      const containsOption = queryByText('Contains');
-
-      expect(isOption).toBeVisible();
-      expect(isEmptyOption).toBeVisible();
-      expect(containsOption).toBeNull();
+      await wait(() => {
+        expect(getByText('Is')).toBeVisible();
+        expect(getByText('Is Empty')).toBeVisible();
+        //use queryBy as option is expected to be filtered out
+        expect(queryByText('Contains')).toBeNull();
+      });
     });
 
     it('sets selectedMatcher to undefined if current value was "contains" on exact match field type', async () => {
-      const { getByText, queryByText } = await selectEntityAndFieldFromDropdown('Url');
-      const matcherSelectEl = getByText('Select Matcher...');
+      const { getByText, queryByText } = render(<SearchForm {...getDefaultProps()} />);
 
-      matcherSelectEl.click();
+      getByText(ENTITY_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Users'))).click();
 
-      const containsOption = await waitForElement(() => getByText('Contains'));
+      getByText(FIELD_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Url'))).click();
 
-      containsOption.click();
+      getByText(MATCHER_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Contains'))).click();
 
       getByText('Url').click();
       (await waitForElement(() => getByText('ID'))).click();
 
       expect(queryByText('Contains')).toBeNull();
     });
-
-    // it('clears current state.value if "is_empty" matcher is selected', async () => {
-    //   const { getByText, getByLabelText, rerender } = await selectEntityAndFieldFromDropdown('Url');
-    //   const inputEl = getByLabelText('Value');
-    //   const matcherSelectEl = getByText('Select Matcher...');
-
-    //   const waitForselectContains = async () => {
-    //     matcherSelectEl.click();
-    //     let containsOption = await waitForElement(() => getByText('Contains'));
-    //     containsOption.click();
-    //     await wait(() => {
-    //       expect(containsOption).not.toBeInTheDocument();
-    //     });
-    //   }
-
-    //   const waitForSelectIsEmpty = async () => {
-    //     matcherSelectEl.click();
-    //     const emptyOption = await waitForElement(() => getByText('Is Empty'));
-    //     emptyOption.click();
-    //     await wait(() => {
-    //       expect(emptyOption).not.toBeInTheDocument();
-    //     });
-    //   }
-
-    //   await waitForselectContains();
-
-    //   fireEvent.change(inputEl, { target: { value: 'test.com' } });
-
-    //   await waitForSelectIsEmpty();
-    //   await waitForselectContains()
-
-    //   // rerender(<SearchForm {...getDefaultProps()} />);
-    //   // fireEvent.change(inputEl, { target: { value: '' } });
-
-    //   expect(inputEl).toHaveValue('');
-    // });
   });
 
   describe('Search Value Input', () => {
@@ -210,13 +159,87 @@ describe('Search', () => {
 
     it('sets input value on change', () => {
       const { getByLabelText } = render(<SearchForm {...getDefaultProps()} />);
-      const inputEl = getByLabelText('Value');
+      const inputEl = getByLabelText(VALUE_LABEL);
 
       expect(inputEl).toHaveValue('');
 
       fireEvent.change(inputEl, { target: { value: 'test'} });
 
       expect(inputEl).toHaveValue('test');
+    });
+
+    describe('with selected entity, field, and matcher', () => {
+      it('emits search event on change', async () => {
+        const mockOnSearchEventHandler = jest.fn();
+        const { getByText, getByLabelText } = render(<SearchForm {...getDefaultProps()} onSearchEvent={mockOnSearchEventHandler} />);
+
+        getByText(ENTITY_PLACEHOLDER).click();
+        (await waitForElement(() => getByText('Users'))).click();
+
+        getByText(FIELD_PLACEHOLDER).click();
+        (await waitForElement(() => getByText('ID'))).click();
+
+        getByText(MATCHER_PLACEHOLDER).click();
+        (await waitForElement(() => getByText('Is'))).click();
+
+        fireEvent.change(getByLabelText(VALUE_LABEL), { target: { value: 'new value'} });
+
+        expect(mockOnSearchEventHandler).toHaveBeenCalled();
+      });
+
+      it('emits search event on ENTER keydown', async () => {
+        const mockOnSearchEventHandler = jest.fn();
+        const { getByText, getByLabelText } = render(<SearchForm {...getDefaultProps()} onSearchEvent={mockOnSearchEventHandler} />);
+
+        getByText(ENTITY_PLACEHOLDER).click();
+        (await waitForElement(() => getByText('Users'))).click();
+
+        getByText(FIELD_PLACEHOLDER).click();
+        (await waitForElement(() => getByText('Name'))).click();
+
+        getByText(MATCHER_PLACEHOLDER).click();
+        (await waitForElement(() => getByText('Contains'))).click();
+
+        getByLabelText(VALUE_LABEL).focus();
+        fireEvent.keyDown(document.activeElement || document.body, { keyCode: 13 });
+
+        expect(mockOnSearchEventHandler).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Search Button', () => {
+    it('renders when matcher is "is_empty"', async () => {
+      const { getByText, queryByText } = render(<SearchForm {...getDefaultProps()} />);
+
+      getByText(ENTITY_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Users'))).click();
+
+      getByText(FIELD_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('ID'))).click();
+
+      getByText(MATCHER_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Is Empty'))).click();
+
+      expect(queryByText('Search')).toBeVisible();
+    });
+
+    it('emits search event on click', async () => {
+      const mockOnSearchEventHandler = jest.fn();
+      const { getByText } = render(<SearchForm {...getDefaultProps()} onSearchEvent={mockOnSearchEventHandler} />);
+
+      getByText(ENTITY_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Users'))).click();
+
+      getByText(FIELD_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('ID'))).click();
+
+      getByText(MATCHER_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Is Empty'))).click();
+
+      getByText('Search').click();
+
+      expect(mockOnSearchEventHandler).toHaveBeenCalled();
     });
   });
 });

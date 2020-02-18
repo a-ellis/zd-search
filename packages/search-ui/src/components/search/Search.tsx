@@ -15,6 +15,11 @@ export class Search extends Component<{}, State> {
     searchResultsType: undefined
   };
 
+  componentWillUnmount() {
+    // cancel any outstanding debounced calls when component unmounts
+    this.debouncedSearchEvent.cancel();
+  }
+
   getSearchResults = async ({ entity, field, matcher, value }: SearchEvent) => {
     try {
       const { data } = await axios.get(`/${entity}/search`, {

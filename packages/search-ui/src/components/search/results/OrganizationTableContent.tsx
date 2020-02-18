@@ -7,9 +7,10 @@ import { OverflowMenu } from './OverflowMenu';
 
 interface Props {
   organizations?: Organization[];
+  onShowData: (data: Organization) => void;
 }
 
-export const OrganizationTableContent: FunctionComponent<Props> = ({ organizations }: Props) => (
+export const OrganizationTableContent: FunctionComponent<Props> = ({ organizations, onShowData }: Props) => (
   <div data-testid="organization-table-content">
     <Head>
       <HeaderRow>
@@ -21,21 +22,21 @@ export const OrganizationTableContent: FunctionComponent<Props> = ({ organizatio
     </Head>
 
     <Body>
-      {organizations?.map(({_id, name, details, domain_names, shared_tickets }) => (
-        <Row key={_id}>
+      {organizations?.map(organization => (
+        <Row key={organization._id}>
 
-          <Cell width="20%">{name}</Cell>
+          <Cell width="20%">{organization.name}</Cell>
 
           <Cell width="50%">
-            {domain_names?.map(name => (
-              <Tag key={_id + name} style={{ marginRight: zdSpacingXxs }}>{name}</Tag>
+            {organization.domain_names?.map(name => (
+              <Tag key={organization._id + name} style={{ marginRight: zdSpacingXxs }}>{name}</Tag>
             ))}
           </Cell>
 
-          <Cell width="15%">{details || <i><small>empty</small></i>}</Cell>
+          <Cell width="15%">{organization.details || <i><small>empty</small></i>}</Cell>
 
           <Cell width="15%" style={{ justifyContent: 'center' }}>
-            { shared_tickets ? (
+            {organization.shared_tickets ? (
                 <Tag style={{ width: '20px', justifyContent: 'center' }} type="mint">Yes</Tag>
               ) : (
                 <Tag style={{ width: '20px', justifyContent: 'center' }}>No</Tag>
@@ -44,7 +45,7 @@ export const OrganizationTableContent: FunctionComponent<Props> = ({ organizatio
           </Cell>
 
           <Cell menu>
-            <OverflowMenu onSelect={(selection: any) => console.log(selection)}/>
+            <OverflowMenu onSelect={() => onShowData(organization)}/>
           </Cell>
 
         </Row>

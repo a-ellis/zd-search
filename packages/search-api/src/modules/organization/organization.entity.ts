@@ -1,8 +1,11 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { BaseZdEntity } from '../database/base.entity';
 
 @Entity()
 export class Organization extends BaseZdEntity {
+  @ObjectIdColumn()
+  _id: number;
+
   @Column()
   name: string;
 

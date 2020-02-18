@@ -1,12 +1,16 @@
 import React from 'react';
-import { OrganizationTableContent } from './OrganizationTableContent';
-import { render } from '../../../utils/test-utils';
-import { SearchResult } from '../interfaces/search.interface';
+import { render, waitForElement, wait } from '../../../utils/test-utils';
 import { Organization } from '../interfaces/organization.interface';
+import { OrganizationTableContent } from './OrganizationTableContent';
+
+const getDefaultProps = (props?: { onShowData: (data: Organization) => void }) => ({
+  onShowData: jest.fn(),
+  ...props
+})
 
 describe('OrganizationTableContent', () => {
   it('renders', () => {
-    const { baseElement } = render(<OrganizationTableContent />);
+    const { baseElement } = render(<OrganizationTableContent {...getDefaultProps()} />);
 
     expect(baseElement).toBeVisible();
   });
@@ -17,7 +21,7 @@ describe('OrganizationTableContent', () => {
       { _id: 2, name: 'Org 2' }
     ] as unknown as Organization[];
 
-    const { getByText } = render(<OrganizationTableContent organizations={mockOrgs} />);
+    const { getByText } = render(<OrganizationTableContent {...getDefaultProps()} organizations={mockOrgs} />);
 
     expect(getByText('Name')).toBeVisible();
     expect(getByText('Details')).toBeVisible();
@@ -30,7 +34,7 @@ describe('OrganizationTableContent', () => {
       { _id: 1, name: 'Org 1', domain_names: ['test.com'] }
     ] as unknown as Organization[];
 
-    const { getByText } = render(<OrganizationTableContent organizations={mockOrgs} />);
+    const { getByText } = render(<OrganizationTableContent {...getDefaultProps()} organizations={mockOrgs} />);
 
     expect(getByText('test.com')).toBeVisible();
     expect(getByText('test.com').getAttribute('data-garden-id')).toContain('tag');
@@ -42,7 +46,7 @@ describe('OrganizationTableContent', () => {
         { _id: 1, name: 'Org 1', shared_tickets: false }
       ] as unknown as Organization[];
 
-      const { getByText } = render(<OrganizationTableContent organizations={mockOrgs} />);
+      const { getByText } = render(<OrganizationTableContent {...getDefaultProps()} organizations={mockOrgs} />);
 
       expect(getByText('No')).toBeVisible();
       expect(getByText('No').getAttribute('data-garden-id')).toContain('tag');
@@ -53,11 +57,26 @@ describe('OrganizationTableContent', () => {
         { _id: 1, name: 'Org 1', shared_tickets: true }
       ] as unknown as Organization[];
 
-      const { getByText } = render(<OrganizationTableContent organizations={mockOrgs} />);
+      const { getByText } = render(<OrganizationTableContent {...getDefaultProps()} organizations={mockOrgs} />);
 
       expect(getByText('Yes')).toBeVisible();
       expect(getByText('Yes').getAttribute('data-garden-id')).toContain('tag');
       expect(getByText('Yes').getAttribute('class')).toContain('mint');
     });
+  });
+
+  it('renders a button for opening row options', async () => {
+    const mockOrgs = [
+      { _id: 1, name: 'Org 1', shared_tickets: true }
+    ] as unknown as Organization[];
+    const mockOnShowData = jest.fn();
+
+    const { container, getByText } = render(<OrganizationTableContent {...getDefaultProps({ onShowData: mockOnShowData })} organizations={mockOrgs} />);
+
+    container.querySelector<HTMLButtonElement>('[data-garden-id="tables.overflow_button"]')?.click();
+
+    (await waitForElement(() => getByText('View Raw Data'))).click();
+
+    expect(mockOnShowData).toHaveBeenCalled();
   });
 });

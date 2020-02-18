@@ -53,7 +53,7 @@
     "mongo-seeding": "^3.4.0-alpha.1",
     "prettier": "^1.18.2",
     "supertest": "^4.0.2",
-    "ts-jest": "25.1.0",
+    "ts-jest": "24.3.0",
     "ts-loader": "^6.2.1",
     "ts-node": "^8.6.0",
     "tsconfig-paths": "^3.9.0",

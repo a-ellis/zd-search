@@ -8,9 +8,10 @@ import { ReactComponent as AlertWarningIcon } from '@zendeskgarden/svg-icons/src
 
 interface Props {
   tickets?: Ticket[];
+  onShowData: (data: Ticket) => void;
 }
 
-export const TicketTableContent: FunctionComponent<Props> = ({ tickets }: Props) => {
+export const TicketTableContent: FunctionComponent<Props> = ({ tickets, onShowData }: Props) => {
   const getPriorityType = (priority: string) => {
     switch(priority) {
       case 'urgent':
@@ -53,35 +54,35 @@ export const TicketTableContent: FunctionComponent<Props> = ({ tickets }: Props)
         </Head>
 
         <Body>
-          {tickets?.map(({_id, subject, priority, type, status }) => (
-            <Row key={_id}>
+          {tickets?.map(ticket => (
+            <Row key={ticket._id}>
 
-              <Cell width="40%">{subject}</Cell>
+              <Cell width="40%">{ticket.subject}</Cell>
 
               <Cell width="20%">
-                {priority ? (
-                  <span style={{ color: getPriorityType(priority), textTransform: 'capitalize' }}>
-                    {priority === 'urgent' ? (
+                {ticket.priority ? (
+                  <span style={{ color: getPriorityType(ticket.priority), textTransform: 'capitalize' }}>
+                    {ticket.priority === 'urgent' ? (
                       <>
-                        {priority}
+                        {ticket.priority}
                         <AlertWarningIcon style={{ verticalAlign: 'text-bottom', marginLeft: '8px' }} />
                       </>
-                    ) : (<>{priority}</>)
+                    ) : (<>{ticket.priority}</>)
                     }
                   </span>
                 ) : (<i><small>empty</small></i>)}
               </Cell>
 
-              <Cell width="20%" style={{ textTransform: 'capitalize' }}>{type || <i><small>empty</small></i>}</Cell>
+              <Cell width="20%" style={{ textTransform: 'capitalize' }}>{ticket.type || <i><small>empty</small></i>}</Cell>
 
               <Cell width="20%">
-                {status ? (
-                  <Tag type={getStatusType(status)} style={{ width: '60px', textTransform: 'uppercase', justifyContent: 'center' }}>{status}</Tag>
+                {ticket.status ? (
+                  <Tag type={getStatusType(ticket.status)} style={{ width: '60px', textTransform: 'uppercase', justifyContent: 'center' }}>{ticket.status}</Tag>
                 ) : (<i><small>empty</small></i>)}
               </Cell>
 
               <Cell menu>
-                <OverflowMenu onSelect={(selection: any) => console.log(selection)}/>
+                <OverflowMenu onSelect={() => onShowData(ticket)}/>
               </Cell>
 
             </Row>

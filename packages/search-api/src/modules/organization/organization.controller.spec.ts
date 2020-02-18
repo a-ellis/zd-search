@@ -3,6 +3,7 @@ import { OrganizationController } from './organization.controller';
 import { OrganizationService } from './organization.service';
 import { SearchService } from '../../common/search.service';
 import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { OrganizationQueryDto } from './organization.dto';
 
 jest.mock('./organization.service');
 jest.mock('../../common/search.service.ts');
@@ -36,21 +37,21 @@ describe('Organizations Controller', () => {
   });
 
   describe('search', () => {
-    let testKey:string;
-    let testValue: string;
+    let field: string;
+    let value: string;
 
     beforeEach(() => {
-      testKey = 'name';
-      testValue = 'Kate';
+      field = 'name';
+      value = 'Planet Express';
     });
 
     it('should call orgService search with find conditions', () => {
-      const expectedFindConditions = { [testKey]: new RegExp(testValue, 'i') };
+      const expectedFindConditions = { [field]: new RegExp(value, 'i') };
       mockSearchService.createFindConditions.mockReturnValueOnce(expectedFindConditions);
 
-      controller.search(testKey, testValue);
+      controller.search({field, value} as OrganizationQueryDto);
 
-      expect(mockSearchService.createFindConditions).toHaveBeenCalledWith(testKey, testValue, undefined);
+      expect(mockSearchService.createFindConditions).toHaveBeenCalledWith(field, value, undefined);
       expect(mockOrgService.search).toHaveBeenCalledWith(expectedFindConditions);
     });
 
@@ -60,7 +61,7 @@ describe('Organizations Controller', () => {
       });
 
       expect(() => {
-        controller.search(testKey, testValue)
+        controller.search({field, value} as OrganizationQueryDto);
       }).toThrowError(BadRequestException);
     });
 
@@ -70,7 +71,7 @@ describe('Organizations Controller', () => {
       });
 
       expect(() => {
-        controller.search(testKey, testValue)
+        controller.search({field, value} as OrganizationQueryDto);
       }).toThrowError(InternalServerErrorException);
     });
   });

@@ -131,6 +131,26 @@ describe('SearchForm', () => {
       });
     });
 
+    it('renders on "contains" option when field is partialMatchRequired data type', async () => {
+      const { getByText, queryByText } = render(<SearchForm {...getDefaultProps()} />);
+
+      getByText(ENTITY_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Users'))).click();
+
+      getByText(FIELD_PLACEHOLDER).click();
+      (await waitForElement(() => getByText('Tags'))).click();
+
+      getByText(MATCHER_PLACEHOLDER).click();
+
+      await wait(() => {
+        expect(getByText('Contains')).toBeVisible();
+
+        //use queryBy as option is expected to be filtered out
+        expect(queryByText('Is')).toBeNull();
+        expect(queryByText('Is Empty')).toBeNull();
+      });
+    });
+
     it('sets selectedMatcher to undefined if current value was "contains" on exact match field type', async () => {
       const { getByText, queryByText } = render(<SearchForm {...getDefaultProps()} />);
 
@@ -204,6 +224,25 @@ describe('SearchForm', () => {
         fireEvent.keyDown(document.activeElement || document.body, { keyCode: 13 });
 
         expect(mockOnSearchEventHandler).toHaveBeenCalled();
+      });
+
+      it('does not emit search event if current value is ""', async () => {
+        const mockOnSearchEventHandler = jest.fn();
+        const { getByText, getByLabelText } = render(<SearchForm {...getDefaultProps()} onSearchEvent={mockOnSearchEventHandler} />);
+
+        getByText(ENTITY_PLACEHOLDER).click();
+        (await waitForElement(() => getByText('Users'))).click();
+
+        getByText(FIELD_PLACEHOLDER).click();
+        (await waitForElement(() => getByText('Name'))).click();
+
+        getByText(MATCHER_PLACEHOLDER).click();
+        (await waitForElement(() => getByText('Contains'))).click();
+
+        getByLabelText(VALUE_LABEL).focus();
+        fireEvent.change(getByLabelText(VALUE_LABEL), { target: { value: ''} });
+
+        expect(mockOnSearchEventHandler).not.toHaveBeenCalled();
       });
     });
   });

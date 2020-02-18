@@ -7,9 +7,19 @@ export enum FIELD_DATA_TYPE {
   ARRAY = 'array'
 };
 
-export const exactMatchDataTypes = [
+export enum MATCHER {
+  IS = 'is',
+  CONTAINS = 'contains',
+  IS_EMPTY = 'is_empty'
+};
+
+export const exactMatchOnlyDataTypes = [
   'boolean',
   'number'
+];
+
+export const partialMatchOnlyDataTypes = [
+  'array'
 ];
 
 export const entityOptions: DropdownOption[] = [
@@ -19,13 +29,12 @@ export const entityOptions: DropdownOption[] = [
 ];
 
 export const matcherOptions: DropdownOption[] = [
-  { label: 'Is', value: 'is'},
-  { label: 'Contains', value: 'contains'},
-  { label: 'Is Empty', value: 'is_empty'},
+  { label: 'Is', value: MATCHER.IS },
+  { label: 'Contains', value: MATCHER.CONTAINS },
+  { label: 'Is Empty', value: MATCHER.IS_EMPTY },
 ];
 
 const baseEntityFields: DropdownOption[] = [
-  { label: 'ID', value: '_id', type: FIELD_DATA_TYPE.NUMBER },
   { label: 'Url', value: 'url', type: FIELD_DATA_TYPE.STRING },
   { label: 'External ID', value: 'external_id', type: FIELD_DATA_TYPE.STRING },
   { label: 'Tags', value: 'tags', type: FIELD_DATA_TYPE.ARRAY },
@@ -34,6 +43,7 @@ const baseEntityFields: DropdownOption[] = [
 
 const organizationFieldOptions: DropdownOption[] = [
   ...baseEntityFields,
+  { label: 'ID', value: '_id', type: FIELD_DATA_TYPE.NUMBER },
   { label: 'Name', value: 'name', type: FIELD_DATA_TYPE.STRING },
   { label: 'Domain Names', value: 'domain_names', type: FIELD_DATA_TYPE.ARRAY },
   { label: 'Details', value: 'details', type: FIELD_DATA_TYPE.STRING },
@@ -42,6 +52,8 @@ const organizationFieldOptions: DropdownOption[] = [
 
 const ticketFieldOptions: DropdownOption[] = [
   ...baseEntityFields,
+  // Note, ID is actually a string in Ticket collection
+  { label: 'ID', value: '_id', type: FIELD_DATA_TYPE.STRING },
   { label: 'Type', value: 'type', type: FIELD_DATA_TYPE.STRING },
   { label: 'Subject', value: 'subject', type: FIELD_DATA_TYPE.STRING },
   { label: 'Description', value: 'description', type: FIELD_DATA_TYPE.STRING },
@@ -57,6 +69,7 @@ const ticketFieldOptions: DropdownOption[] = [
 
 const userFieldOptions: DropdownOption[] = [
   ...baseEntityFields,
+  { label: 'ID', value: '_id', type: FIELD_DATA_TYPE.NUMBER },
   { label: 'Name', value: 'name', type: FIELD_DATA_TYPE.STRING },
   { label: 'Alias', value: 'alias', type: FIELD_DATA_TYPE.STRING },
   { label: 'Active', value: 'active', type: FIELD_DATA_TYPE.BOOLEAN },

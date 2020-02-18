@@ -11,3 +11,5 @@ declare module '@zendeskgarden/css-variables';
 declare module '@zendeskgarden/react-typography';
 declare module '@zendeskgarden/react-grid';
 declare module '@zendeskgarden/react-tags';
+declare module '@zendeskgarden/react-notifications';
+declare module '@zendeskgarden/react-modals';

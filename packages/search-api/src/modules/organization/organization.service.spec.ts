@@ -35,13 +35,9 @@ describe('OrganizationsService', () => {
   });
 
   describe('search', () => {
-    let findConditions: FindConditions<Organization>;
-
-    beforeEach(() => {
-      findConditions = { name: 'John Smith' };
-    });
-
     it('should call repo find method with supplied find conditions', () => {
+      const findConditions: FindConditions<Organization> = { name: 'Kwik-E-Mart' };
+
       service.search(findConditions);
 
       expect(mockRepo.find).toBeCalledWith(findConditions);

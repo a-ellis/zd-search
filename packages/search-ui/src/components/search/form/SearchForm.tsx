@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { DropdownOption, EntityType, SearchEvent } from '../interfaces/search.interface';
-import { allFieldOptions, entityOptions, exactMatchDataTypes, matcherOptions } from './dropdown-option.constants';
+import { allFieldOptions, entityOptions, exactMatchOnlyDataTypes, matcherOptions, partialMatchOnlyDataTypes, MATCHER } from './dropdown-option.constants';
 import { SearchDropdown } from './SearchDropdown';
 import { SearchValueInput } from './SearchValueInput';
 import { Grid, Row, Col } from '@zendeskgarden/react-grid';
 
 interface Props {
   onSearchEvent: (event: SearchEvent) => void;
+  loading?: boolean;
 }
 
 interface State {
@@ -40,13 +41,31 @@ export class SearchForm extends Component<Props, State> {
     }
   }
 
-  onValueChange = ({ currentTarget }: React.FormEvent<HTMLInputElement>) => this.setState({ value: currentTarget.value }, this.emitSearchEvent);
+  onValueChange = ({ currentTarget }: React.FormEvent<HTMLInputElement>) => {
+    this.setState({ value: currentTarget.value }, () => {
+      if (currentTarget.value) {
+        this.emitSearchEvent();
+      }
+    });
+  }
 
   onInputKeydown = ({ keyCode }: KeyboardEvent) => keyCode === 13 && this.emitSearchEvent();
 
   onSearchButtonClick = () => this.emitSearchEvent();
 
-  fieldTypeRequiresExact = (field?: DropdownOption) => field && exactMatchDataTypes.includes(field.type as string);
+  getFilteredMatcherOptions = (field: DropdownOption) => {
+    let filteredMatcherOptions;
+
+    if (exactMatchOnlyDataTypes.includes(field.type as string)) {
+      filteredMatcherOptions = matcherOptions.filter(matcher => matcher.value !== MATCHER.CONTAINS);
+    } else if (partialMatchOnlyDataTypes.includes(field.type as string)) {
+      filteredMatcherOptions = matcherOptions.filter(matcher => matcher.value === MATCHER.CONTAINS);
+    } else {
+      filteredMatcherOptions = matcherOptions.slice();
+    }
+
+    return filteredMatcherOptions;
+  }
 
   onSelectEntity = (selectedEntity: DropdownOption) => {
     const fieldOptionsByEntity = allFieldOptions[(selectedEntity as DropdownOption<'organizations'| 'tickets' |'users'>).value];
@@ -54,13 +73,9 @@ export class SearchForm extends Component<Props, State> {
   };
 
   onSelectField = (selectedField: DropdownOption) => {
-    const exactMatch = this.fieldTypeRequiresExact(selectedField);
+    const filteredMatcherOptions = this.getFilteredMatcherOptions(selectedField);
 
-    const filteredMatcherOptions = exactMatch ?
-      matcherOptions.filter(matcher => matcher.value !== 'contains') :
-      matcherOptions.slice();
-
-    if (exactMatch && this.state.selectedMatcher?.value === 'contains') {
+    if (exactMatchOnlyDataTypes.includes(selectedField.type as string) && this.state.selectedMatcher?.value === MATCHER.CONTAINS) {
       this.setState({ selectedMatcher: undefined });
     }
 
@@ -68,7 +83,7 @@ export class SearchForm extends Component<Props, State> {
   };
 
   onSelectMatcher = (selectedMatcher: DropdownOption) => {
-    if (selectedMatcher.value === 'is_empty') {
+    if (selectedMatcher.value === MATCHER.IS_EMPTY) {
       this.setState({ selectedMatcher, value: '' });
     } else {
       this.setState({ selectedMatcher });
@@ -77,6 +92,7 @@ export class SearchForm extends Component<Props, State> {
 
   render() {
     const { selectedEntity, selectedField, selectedMatcher, fieldOptionsByEntity, filteredMatcherOptions, value } = this.state;
+    const { loading } = this.props;
 
     return (
       <Grid>
@@ -115,7 +131,7 @@ export class SearchForm extends Component<Props, State> {
         </Row>
 
         <Row>
-          <Col sm={12} md={selectedMatcher?.value === 'is_empty' ? 4 : 12}>
+          <Col sm={12} md={selectedMatcher?.value === MATCHER.IS_EMPTY ? 4 : 12}>
             <SearchValueInput
               selectedEntity={selectedEntity}
               selectedField={selectedField}
@@ -124,6 +140,7 @@ export class SearchForm extends Component<Props, State> {
               onInputKeyDown={this.onInputKeydown}
               onSearchButtonClick={this.onSearchButtonClick}
               value={value}
+              loading={loading}
             />
           </Col>
         </Row>

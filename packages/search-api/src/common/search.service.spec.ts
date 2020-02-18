@@ -106,5 +106,58 @@ describe('UsersService', () => {
       });
     });
 
+    describe('with field data type of "boolean"', () => {
+      it('should set pattern to null if null', () => {
+        const testKey = 'active';
+        const testValue = '';
+        const expectedResult = { [testKey]: null };
+
+        const fc = service.createFindConditions(testKey, testValue);
+
+        expect(fc).toEqual(expectedResult);
+      });
+
+      it('should set pattern to boolean true when equal to string "true"', () => {
+        const testKey = 'active';
+        const testValue = 'true';
+        const expectedResult = { [testKey]: true };
+
+        const fc = service.createFindConditions(testKey, testValue);
+
+        expect(fc).toEqual(expectedResult);
+      });
+
+      it('should set pattern to boolean false when equal to string "false"', () => {
+        const testKey = 'active';
+        const testValue = 'false';
+        const expectedResult = { [testKey]: false };
+
+        const fc = service.createFindConditions(testKey, testValue);
+
+        expect(fc).toEqual(expectedResult);
+      });
+    });
+
+    describe('with field data type of "number"', () => {
+      it('parses value as int', () => {
+        const testKey = '_id';
+        const testValue = '12';
+        const expectedResult = { [testKey]: 12 };
+
+        const fc = service.createFindConditions(testKey, testValue);
+
+        expect(fc).toEqual(expectedResult);
+      });
+
+      it('throws BadRequestException if parsed value is NaN', () => {
+        const testKey = '_id';
+        const testValue = 'twelve';
+
+        expect(() => {
+          service.createFindConditions(testKey, testValue)
+        }).toThrowError(BadRequestException);
+      });
+    });
+
   });
 });

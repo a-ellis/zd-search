@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { User } from './user.entity';
 import { Repository } from 'typeorm/repository/Repository';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { FindConditions } from 'typeorm';
 
 jest.mock('typeorm/repository/Repository');
 
@@ -30,6 +31,16 @@ describe('UsersService', () => {
     it('should call repo find method', () => {
       service.findAll();
       expect(mockRepo.find).toHaveBeenCalled();
+    });
+  });
+
+  describe('search', () => {
+    it('should call repo find method with supplied find conditions', () => {
+      const findConditions: FindConditions<User> = { name: 'John Smith' };
+
+      service.search(findConditions);
+
+      expect(mockRepo.find).toBeCalledWith(findConditions);
     });
   });
 });

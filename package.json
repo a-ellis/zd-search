@@ -2,8 +2,11 @@
   "name": "root",
   "scripts": {
     "start": "lerna run start --stream",
+    "bootstrap": "lerna bootstrap",
     "start:ui": "lerna run start --scope search-ui --stream",
-    "start:api": "lerna run start --scope search-api --stream"
+    "start:api": "lerna run start --scope search-api --stream",
+    "test": "npm run test:cov",
+    "test:cov": "lerna run test:cov"
   },
   "devDependencies": {
     "lerna": "^3.20.2"

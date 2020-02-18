@@ -1,6 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { FindConditions } from 'typeorm';
 import { SearchService } from '../../common/search.service';
+import { UserQueryDto } from './user.dto';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 
@@ -14,7 +15,8 @@ export class UserController {
   }
 
   @Get('search')
-  search(@Query('field') field: string, @Query('value') value: string, @Query('exact') exact?: string) {
+  search(@Query() query: UserQueryDto) {
+    const { field, value, exact } = query;
     try {
       const findConditions: FindConditions<User> = this.searchService.createFindConditions(field, value, exact);
       return this.userService.search(findConditions);

@@ -6,9 +6,10 @@ import { Tag } from '@zendeskgarden/react-tags';
 
 interface Props {
   users?: User[];
+  onShowData: (user: User) => void;
 }
 
-export const UserTableContent: FunctionComponent<Props> = ({ users }: Props) => (
+export const UserTableContent: FunctionComponent<Props> = ({ users, onShowData }: Props) => (
   <div data-testid="user-table-content">
     <Head>
       <HeaderRow>
@@ -20,25 +21,25 @@ export const UserTableContent: FunctionComponent<Props> = ({ users }: Props) => 
     </Head>
 
     <Body>
-      {users?.map(({_id, email, name, phone, role}) => (
-        <Row key={_id}>
+      {users?.map(user => (
+        <Row key={user._id}>
 
-          <Cell width="30%">{name}</Cell>
+          <Cell width="30%">{user.name}</Cell>
 
           <Cell width="20%">
-            <Tag pill>{phone}</Tag>
+            <Tag pill>{user.phone}</Tag>
           </Cell>
 
-          <Cell width="30%" truncate>{email || <i><small>empty</small></i>}</Cell>
+          <Cell width="30%" truncate>{user.email || <i><small>empty</small></i>}</Cell>
 
           <Cell width="20%">
             <Tag style={{ width: '60px', justifyContent: 'center', textTransform: 'capitalize' }}>
-              {role === 'end-user' ? role.replace(/-/g, ' ') : role}
+              {user.role === 'end-user' ? user.role.replace(/-/g, ' ') : user.role}
             </Tag>
           </Cell>
 
           <Cell menu>
-            <OverflowMenu onSelect={(selection: any) => console.log(selection)}/>
+            <OverflowMenu onSelect={() => onShowData(user)}/>
           </Cell>
 
         </Row>

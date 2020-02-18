@@ -1,9 +1,6 @@
 import { ObjectIdColumn, Column } from 'typeorm';
 
 export abstract class BaseZdEntity {
-  @ObjectIdColumn()
-  _id: number;
-
   @Column()
   url: string;
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '../../../utils/test-utils';
+import { render, wait, waitForElement, screen } from '../../../utils/test-utils';
 import { SearchResults } from './SearchResults';
 import { SearchResult } from '../interfaces/search.interface';
 
@@ -14,7 +14,7 @@ describe('SearchResults', () => {
     const mockEmptyResults: SearchResult = [];
     const { getByText } = render(<SearchResults results={mockEmptyResults} />);
 
-    expect(getByText('No Results')).toBeVisible();
+    expect(getByText('No Results Found')).toBeVisible();
   });
 
   it('renders singular version of caption with single result', () => {
@@ -67,6 +67,59 @@ describe('SearchResults', () => {
       const { getByTestId } = render(<SearchResults results={mockResults} resultType={mockResultType} />);
 
       expect(getByTestId('ticket-table-content')).toBeVisible();
+    });
+  });
+
+  describe('Modal', () => {
+    it('renders when view raw data is selected', async () => {
+      const mockResults = [
+        { _id: 1, name: 'Super Corp' }
+      ];
+      const mockResultType = 'organizations';
+      const { container, getByText } = render(<SearchResults results={mockResults} resultType={mockResultType} />);
+
+      container.querySelector<HTMLButtonElement>('[data-garden-id="tables.overflow_button"]')?.click();
+      (await waitForElement(() => getByText('View Raw Data'))).click();
+
+      await wait(() => {
+        expect(getByText('Viewing Raw Data')).toBeVisible();
+      });
+    });
+
+    it('renders close button', async () => {
+      const mockResults = [
+        { _id: 1, name: 'Joe' }
+      ];
+      const mockResultType = 'users';
+      const { container, getByText, getByTestId, queryByText } = render(<SearchResults results={mockResults} resultType={mockResultType} />);
+
+      container.querySelector<HTMLButtonElement>('[data-garden-id="tables.overflow_button"]')?.click();
+      (await waitForElement(() => getByText('View Raw Data'))).click();
+
+      await wait(() => {
+        expect(getByText('Viewing Raw Data')).toBeVisible()
+      });
+
+      (await waitForElement(() => getByTestId('modal-close-button'))).click();
+
+      await wait(() => {
+        expect(queryByText('Viewing Raw Data')).toBeNull();
+      });
+    });
+
+    it('all entity table types can open modal', async () => {
+      const mockResults = [
+        { _id: 1, subject: 'Oooooh nooooo' }
+      ];
+      const mockResultType = 'tickets';
+      const { container, getByText } = render(<SearchResults results={mockResults} resultType={mockResultType} />);
+
+      container.querySelector<HTMLButtonElement>('[data-garden-id="tables.overflow_button"]')?.click();
+      (await waitForElement(() => getByText('View Raw Data'))).click();
+
+      await wait(() => {
+        expect(getByText('Viewing Raw Data')).toBeVisible()
+      });
     });
   });
 });

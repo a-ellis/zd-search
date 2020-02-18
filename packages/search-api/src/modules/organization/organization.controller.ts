@@ -3,6 +3,7 @@ import { FindConditions } from 'typeorm';
 import { SearchService } from '../../common/search.service';
 import { Organization } from './organization.entity';
 import { OrganizationService } from './organization.service';
+import { OrganizationQueryDto } from './organization.dto';
 
 @Controller('organizations')
 export class OrganizationController {
@@ -14,7 +15,8 @@ export class OrganizationController {
   }
 
   @Get('search')
-  search(@Query('field') field: string, @Query('value') value: string, @Query('exact') exact?: string) {
+  search(@Query() query: OrganizationQueryDto) {
+      const { field, value, exact } = query;
       try {
         const findConditions: FindConditions<Organization> = this.searchService.createFindConditions(field, value, exact);
         return this.orgService.search(findConditions);

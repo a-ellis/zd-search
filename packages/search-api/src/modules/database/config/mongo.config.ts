@@ -16,5 +16,6 @@ export const mongoConnectionOptions: TypeOrmModuleOptions = {
   database: MONGO_CONFIG.DATABASE,
   entities: [User, Ticket, Organization],
   synchronize: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  keepConnectionAlive: true
 };

@@ -3,6 +3,7 @@ import { FindConditions } from 'typeorm';
 import { SearchService } from '../../common/search.service';
 import { Ticket } from './ticket.entity';
 import { TicketService } from './ticket.service';
+import { TicketQueryDto } from './ticket.dto';
 
 @Controller('tickets')
 export class TicketController {
@@ -14,9 +15,14 @@ export class TicketController {
   }
 
   @Get('search')
-  search(@Query('field') field: string, @Query('value') value: string, @Query('exact') exact?: string) {
+  search(@Query() query: TicketQueryDto) {
+    const { field, value, exact } = query;
+    const fieldDataTypeReplacements = {
+      '_id': 'string'
+    };
+
     try {
-      const findConditions: FindConditions<Ticket> = this.searchService.createFindConditions(field, value, exact);
+      const findConditions: FindConditions<Ticket> = this.searchService.createFindConditions(field, value, exact, { fieldDataTypeReplacements });
       return this.ticketService.search(findConditions);
     } catch (error) {
       throw error;

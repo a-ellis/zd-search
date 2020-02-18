@@ -3,6 +3,9 @@ import React, { Component } from 'react';
 import { DropdownOption } from '../interfaces/search.interface';
 import { Button } from '@zendeskgarden/react-buttons';
 import { ReactComponent as SearchIcon } from '@zendeskgarden/svg-icons/src/26/search.svg';
+import { MATCHER } from './dropdown-option.constants';
+import { Spinner } from '@zendeskgarden/react-loaders';
+import { zdColorBlue500 } from '@zendeskgarden/css-variables';
 
 interface Props {
   onValueChange: (event: React.FormEvent<HTMLInputElement>) => void;
@@ -12,13 +15,14 @@ interface Props {
   selectedField?: DropdownOption;
   selectedMatcher?: DropdownOption;
   value?: string;
+  loading?: boolean;
 }
 
 export class SearchValueInput extends Component<Props> {
   render() {
-      const { selectedEntity, selectedField, selectedMatcher, value, onValueChange, onInputKeyDown, onSearchButtonClick } = this.props;
+      const { selectedEntity, selectedField, selectedMatcher, value, loading, onValueChange, onInputKeyDown, onSearchButtonClick } = this.props;
 
-      if (selectedField?.type === 'boolean' && selectedMatcher?.value !== 'is_empty') {
+      if (selectedField?.type === 'boolean' && selectedMatcher?.value !== MATCHER.IS_EMPTY) {
         return (
           <Field>
             <Label>Value</Label>
@@ -45,7 +49,7 @@ export class SearchValueInput extends Component<Props> {
           </Field>
         )
       } else {
-        return selectedMatcher?.value === 'is_empty' ? (
+        return selectedMatcher?.value === MATCHER.IS_EMPTY ? (
           <Button
             stretched
             className="u-mv"
@@ -63,8 +67,8 @@ export class SearchValueInput extends Component<Props> {
               onKeyDown={onInputKeyDown}
               value={value}
               disabled={!selectedEntity || !selectedField || !selectedMatcher}
-              end={<SearchIcon/>}
-            />
+              end={loading ? <Spinner delayMS={0} duration={800} size="100px" color={zdColorBlue500} /> : <SearchIcon/>}
+              />
           </Field>
         );
       }

@@ -1,8 +1,11 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { BaseZdEntity } from '../database/base.entity';
 
 @Entity()
 export class Ticket extends BaseZdEntity {
+  @ObjectIdColumn()
+  _id: string;
+
   @Column()
   type: string;
 

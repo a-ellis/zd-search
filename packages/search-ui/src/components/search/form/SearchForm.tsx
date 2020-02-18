@@ -3,6 +3,7 @@ import { DropdownOption, EntityType, SearchEvent } from '../interfaces/search.in
 import { allFieldOptions, entityOptions, exactMatchDataTypes, matcherOptions } from './dropdown-option.constants';
 import { SearchDropdown } from './SearchDropdown';
 import { SearchValueInput } from './SearchValueInput';
+import { Grid, Row, Col } from '@zendeskgarden/react-grid';
 
 interface Props {
   onSearchEvent: (event: SearchEvent) => void;
@@ -78,44 +79,56 @@ export class SearchForm extends Component<Props, State> {
     const { selectedEntity, selectedField, selectedMatcher, fieldOptionsByEntity, filteredMatcherOptions, value } = this.state;
 
     return (
-      <>
-        <SearchDropdown
-          selectedOption={selectedEntity}
-          dropdownOptions={entityOptions}
-          onSelect={this.onSelectEntity}
-          placeholder="Select Entity..."
-          label="Entity"
-        />
+      <Grid>
 
-        <SearchDropdown
-          selectedOption={selectedField}
-          dropdownOptions={fieldOptionsByEntity}
-          onSelect={this.onSelectField}
-          placeholder="Select Field..."
-          label="Field"
-          disabled={!selectedEntity}
-        />
+        <Row>
+          <Col sm={12} md={4}>
+            <SearchDropdown
+              selectedOption={selectedEntity}
+              dropdownOptions={entityOptions}
+              onSelect={this.onSelectEntity}
+              placeholder="Select Entity..."
+              label="Entity"
+            />
+          </Col>
 
-        <SearchDropdown
-          selectedOption={selectedMatcher}
-          dropdownOptions={filteredMatcherOptions}
-          onSelect={this.onSelectMatcher}
-          placeholder="Select Matcher..."
-          label="Matcher"
-          disabled={!selectedField}
-        />
+          <Col sm={12} md={4}>
+            <SearchDropdown
+              selectedOption={selectedField}
+              dropdownOptions={fieldOptionsByEntity}
+              onSelect={this.onSelectField}
+              placeholder="Select Field..."
+              label="Field"
+              disabled={!selectedEntity}
+            />
+          </Col>
+          <Col sm={12} md={4}>
+            <SearchDropdown
+              selectedOption={selectedMatcher}
+              dropdownOptions={filteredMatcherOptions}
+              onSelect={this.onSelectMatcher}
+              placeholder="Select Matcher..."
+              label="Matcher"
+              disabled={!selectedField}
+            />
+          </Col>
+        </Row>
 
-        <SearchValueInput
-          selectedEntity={selectedEntity}
-          selectedField={selectedField}
-          selectedMatcher={selectedMatcher}
-          onValueChange={this.onValueChange}
-          onInputKeyDown={this.onInputKeydown}
-          onSearchButtonClick={this.onSearchButtonClick}
-          value={value}
-          data-testid="search-value-input"
-        />
-      </>
+        <Row>
+          <Col sm={12} md={selectedMatcher?.value === 'is_empty' ? 4 : 12}>
+            <SearchValueInput
+              selectedEntity={selectedEntity}
+              selectedField={selectedField}
+              selectedMatcher={selectedMatcher}
+              onValueChange={this.onValueChange}
+              onInputKeyDown={this.onInputKeydown}
+              onSearchButtonClick={this.onSearchButtonClick}
+              value={value}
+            />
+          </Col>
+        </Row>
+
+      </Grid>
     );
   }
 }

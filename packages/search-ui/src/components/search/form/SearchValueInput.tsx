@@ -1,7 +1,8 @@
-import { Field, Input, Label, Radio } from '@zendeskgarden/react-forms';
+import { Field, MediaInput, Label, Radio } from '@zendeskgarden/react-forms';
 import React, { Component } from 'react';
 import { DropdownOption } from '../interfaces/search.interface';
 import { Button } from '@zendeskgarden/react-buttons';
+import { ReactComponent as SearchIcon } from '@zendeskgarden/svg-icons/src/26/search.svg';
 
 interface Props {
   onValueChange: (event: React.FormEvent<HTMLInputElement>) => void;
@@ -17,7 +18,7 @@ export class SearchValueInput extends Component<Props> {
   render() {
       const { selectedEntity, selectedField, selectedMatcher, value, onValueChange, onInputKeyDown, onSearchButtonClick } = this.props;
 
-      if (selectedField?.type === 'boolean') {
+      if (selectedField?.type === 'boolean' && selectedMatcher?.value !== 'is_empty') {
         return (
           <Field>
             <Label>Value</Label>
@@ -56,12 +57,13 @@ export class SearchValueInput extends Component<Props> {
         ) : (
           <Field>
             <Label>Value</Label>
-            <Input
+            <MediaInput
               placeholder="Enter search value..."
               onChange={onValueChange}
               onKeyDown={onInputKeyDown}
               value={value}
               disabled={!selectedEntity || !selectedField || !selectedMatcher}
+              end={<SearchIcon/>}
             />
           </Field>
         );

@@ -13,5 +13,5 @@ export class Organization extends BaseZdEntity {
   details: string;
 
   @Column()
-  share_tickets: boolean;
+  shared_tickets: boolean;
 }

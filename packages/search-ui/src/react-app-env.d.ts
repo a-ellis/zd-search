@@ -9,3 +9,5 @@ declare module '@zendeskgarden/react-tables';
 declare module '@zendeskgarden/react-loaders';
 declare module '@zendeskgarden/css-variables';
 declare module '@zendeskgarden/react-typography';
+declare module '@zendeskgarden/react-grid';
+declare module '@zendeskgarden/react-tags';

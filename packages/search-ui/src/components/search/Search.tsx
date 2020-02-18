@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
-import { SearchForm } from './form/SearchForm';
-import { SearchEvent, EntityType } from './interfaces/search.interface';
 import axios from 'axios';
 import { debounce } from 'lodash';
+import React, { Component } from 'react';
+import { SearchForm } from './form/SearchForm';
+import { EntityType, SearchEvent, SearchResult } from './interfaces/search.interface';
+import { SearchResults } from './results/SearchResults';
 
 interface State {
-  searchResults?: any[];
+  searchResults?: SearchResult;
   searchResultsType?: EntityType;
 }
 
@@ -22,11 +23,11 @@ export class Search extends Component<{}, State> {
 
   getSearchResults = async ({ entity, field, matcher, value }: SearchEvent) => {
     try {
-      const { data } = await axios.get(`/${entity}/search`, {
+      const { data } = await axios.get<SearchResult>(`/${entity}/search`, {
         params: {
           field,
           value,
-          exact: !!(matcher === 'is')
+          exact: matcher === 'is'
         }
       });
       this.setState({ searchResults: data, searchResultsType: entity });
@@ -38,8 +39,13 @@ export class Search extends Component<{}, State> {
   debouncedSearchEvent = debounce(this.getSearchResults, 300);
 
   render() {
+    const { searchResults, searchResultsType } = this.state;
+
     return (
-      <SearchForm onSearchEvent={this.debouncedSearchEvent} />
+      <>
+        <SearchForm onSearchEvent={this.debouncedSearchEvent} />
+        <SearchResults results={searchResults} resultType={searchResultsType} />
+      </>
     );
   }
 };

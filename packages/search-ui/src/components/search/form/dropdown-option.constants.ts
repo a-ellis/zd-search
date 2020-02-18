@@ -37,7 +37,7 @@ const organizationFieldOptions: DropdownOption[] = [
   { label: 'Name', value: 'name', type: FIELD_DATA_TYPE.STRING },
   { label: 'Domain Names', value: 'domain_names', type: FIELD_DATA_TYPE.ARRAY },
   { label: 'Details', value: 'details', type: FIELD_DATA_TYPE.STRING },
-  { label: 'Share Tickets', value: 'share_tickets', type: FIELD_DATA_TYPE.BOOLEAN },
+  { label: 'Shared Tickets', value: 'shared_tickets', type: FIELD_DATA_TYPE.BOOLEAN },
 ];
 
 const ticketFieldOptions: DropdownOption[] = [

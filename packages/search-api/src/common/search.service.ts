@@ -27,7 +27,7 @@ export class SearchService {
       }
 
       if (dataTypes[field] === DATA_TYPE.NUMBER) {
-        pattern = +value;
+        pattern = value.length ? +value : null;
         if (Number.isNaN(pattern)) {
           if (field === '_id')
           throw new BadRequestException();

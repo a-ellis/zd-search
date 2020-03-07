@@ -149,6 +149,16 @@ describe('UsersService', () => {
         expect(fc).toEqual(expectedResult);
       });
 
+      it('should set pattern to null if value is empty', () => {
+        const testKey = 'organization_id';
+        const testValue = '';
+        const expectedResult = { [testKey]: null };
+
+        const fc = service.createFindConditions(testKey, testValue);
+
+        expect(fc).toEqual(expectedResult);
+      });
+
       it('throws BadRequestException if parsed value is NaN', () => {
         const testKey = '_id';
         const testValue = 'twelve';
